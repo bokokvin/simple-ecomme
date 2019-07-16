@@ -28,7 +28,7 @@
 			";
 	$result = mysqli_query($link,$qry);
 
-	$od_id = mysql_insert_id();
+	$od_id = mysqli_insert_id($link);
 
 	foreach($_SESSION['CART'] as $cart_item_ID => $cart_item)
 	{

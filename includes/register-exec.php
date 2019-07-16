@@ -14,7 +14,7 @@
 	//Connect to mysql server
 	$link = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD);
 	if(!$link) {
-		die('Failed to connect to server: ' . mysql_error());
+		die('Failed to connect to server: ');
 	}
 	
 	//Select database
@@ -81,7 +81,7 @@
 				$errmsg_arr[] = 'Username already in use';
 				$errflag = true;
 			}
-			@mysql_free_result($result);
+			@mysqli_free_result($result);
 		}
 		else {
 			die("Query failed");

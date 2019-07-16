@@ -14,7 +14,7 @@
 	//Connect to mysql server
     $link = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD);
     if(!$link) {
-        die('Failed to connect to server: ' . mysql_error());
+        die('Failed to connect to server: ');
     }
 
     //Select database
@@ -33,8 +33,8 @@
     }
 	
 	//Sanitize the POST values
-	$username = clean($_POST['username']);
-	$password = clean($_POST['password']);
+	$username = clean($_POST['username'], $link);
+	$password = clean($_POST['password'], $link);
 	
 	//Input Validations
 	if($username == '') {
@@ -56,14 +56,14 @@
 	
 	//Create query
 	$qry="SELECT * FROM tbl_user WHERE user_name='$username' AND password='".md5($_POST['password'])."'";
-	$result=mysql_query($qry);
+	$result=mysqli_query($link,$qry);
 
 	//Check whether the query was successful or not
 	if($result) {
-		if(mysql_num_rows($result) == 1) {
+		if(mysqli_num_rows($result) == 1) {
 			//Login Successful
 			session_regenerate_id();
-			$member = mysql_fetch_assoc($result);
+			$member = mysqli_fetch_assoc($result);
 			$_SESSION['SESS_USER_ID'] = $member['user_id'];
 			$_SESSION['SESS_USERNAME'] = $member['user_name'];
 			$_SESSION['SESS_IS_ADMIN'] = $member['user_is_admin'];
@@ -78,6 +78,6 @@
 			exit();
 		}
 	}else {
-		die("Query failed: ".mysql_error());
+		die("Query failed: ");
 	}
 ?>

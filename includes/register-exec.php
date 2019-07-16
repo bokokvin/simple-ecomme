@@ -12,31 +12,31 @@
 	$errflag = false;
 	
 	//Connect to mysql server
-	$link = mysql_connect(DB_HOST, DB_USER, DB_PASSWORD);
+	$link = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD);
 	if(!$link) {
 		die('Failed to connect to server: ' . mysql_error());
 	}
 	
 	//Select database
-	$db = mysql_select_db(DB_DATABASE);
+	$db = mysqli_select_db($link,DB_DATABASE);
 	if(!$db) {
 		die("Unable to select database");
 	}
 	
 	//Function to sanitize values received from the form. Prevents SQL injection
-	function clean($str) {
+	function clean($str, $link) {
 		$str = @trim($str);
 		if(get_magic_quotes_gpc()) {
 			$str = stripslashes($str);
 		}
-		return mysql_real_escape_string($str);
+		return mysqli_real_escape_string($link,$str);
 	}
 	
 	//Sanitize the POST values
-	$username = clean($_POST['username']);
-	$email = clean($_POST['email']);
-	$password = clean($_POST['password']);
-	$cpassword = clean($_POST['cpassword']);
+	$username = clean($_POST['username'], $link);
+	$email = clean($_POST['email'], $link);
+	$password = clean($_POST['password'], $link);
+	$cpassword = clean($_POST['cpassword'], $link);
 	
 	//Input Validations
 	if($username == '') {
@@ -75,9 +75,9 @@
 	//Check for duplicate login ID
 	if($username != '') {
 		$qry = "SELECT * FROM tbl_user WHERE user_name='$username'";
-		$result = mysql_query($qry);
+		$result = mysqli_query($link,$qry);
 		if($result) {
-			if(mysql_num_rows($result) > 0) {
+			if(mysqli_num_rows($result) > 0) {
 				$errmsg_arr[] = 'Username already in use';
 				$errflag = true;
 			}
@@ -99,7 +99,7 @@
 	//Create INSERT query
 	$qry = "INSERT INTO tbl_user(user_name, password, user_email, created_at, updated_at, user_is_admin) 
 			VALUES('$username','".md5($_POST['password'])."','$email','".date("Y-m-d H:i:s")."', '".date("Y-m-d H:i:s")."', $is_admin)";
-	$result = @mysql_query($qry);
+	$result = @mysqli_query($link,$qry);
 	
 	//Check whether the query was successful or not
 	if($result) {
@@ -108,6 +108,6 @@
 		header("location: ../index.php");
 		exit();
 	}else {
-		die("Query failed: ".mysql_error());
+		die("Query failed: ");
 	}
 ?>
